@@ -5,7 +5,7 @@ ARGS = -mcpu=12F683\
 
 INCLUDES = -I .
 
-SRC = dimmer.c test.c
+SRC = dimmer.c main.c
 
 OUTPUT = -o main.hex
 
