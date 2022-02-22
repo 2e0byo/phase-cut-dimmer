@@ -1,8 +1,8 @@
 #include "hal.h"
 #include <xc.h>
 
-static unsigned char *inBuffer;
-static unsigned char *outBuffer;
+static volatile unsigned char *inBuffer;
+static volatile unsigned char *outBuffer;
 static unsigned char maxBytes = 0;
 static unsigned char count = 0;
 static unsigned char scratch;
@@ -50,10 +50,10 @@ void SpiSCK(unsigned char state) {
   }
 }
 
-void SpiTransaction(unsigned char bytes, unsigned char *write,
-                    unsigned char *read) {
+void SpiTransaction(unsigned char bytes, volatile unsigned char *write,
+                    volatile unsigned char *read) {
   count = 0;
-  maxBytes = bytes - 1;
+  maxBytes = bytes;
   inBuffer = read;
   outBuffer = write;
   while (!transactionAvailable)

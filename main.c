@@ -104,24 +104,29 @@ void main(void) {
   init();
   unsigned char cmd;
   unsigned char len;
-  unsigned char payload[6];
-  unsigned char write[6];
-  unsigned char read[6];
-  unsigned char blank[6];
+  volatile unsigned char payload[6];
+  volatile unsigned char write[6];
+  volatile unsigned char read[6];
+  volatile unsigned char blank[6];
   for (unsigned char i = 0; i < 6; i++)
     blank[i] = 0;
 
   LAMP = 0;
+  for (unsigned char i = 0; i < 6; i++)
+    payload[i] = 0;
   while (1) {
-    for (unsigned char i = 0; i < 6; i++)
-      payload[i] = 0;
-    LAMP = 1;
+    /* LAMP = 1; */
     SpiTransaction(6, blank, payload);
-    LAMP = 0;
+    /* LAMP = 0; */
     cmd = payload[0];
     len = payload[1];
 
-    SpiTransaction(6, payload, read);
+    switch (cmd) {
+    case 'p':
+      /* blip(len == 2); */
+      SpiTransaction(len, &payload[2], read);
+    }
+
     /* blank[0] = cmd; */
     /* SpiTransaction(3, blank, read); */
     /* switch (cmd) { */
