@@ -1,70 +1,78 @@
 #include "hal.h"
 #include <xc.h>
-#include <stdbool.h>
+#include  "spi.h"
 
-static volatile unsigned char *inBuffer;
-static volatile unsigned char *outBuffer;
-static unsigned char maxBytes = 0;
+static unsigned char *inBuffer;
+static const unsigned char *outBuffer;
 static unsigned char count = 0;
 static unsigned char scratch;
-static unsigned char bit = 0x80;
-static unsigned char transactionAvailable = 0;
-static unsigned char blank = 0;
+static unsigned char mask = 0x80;
+static unsigned char blankBfr = 0;
 bool writeBlank;
 
 static void enable(void) {
-  SCKIOC = 1; /* enable interrupt on clock change */
   MISO = 0;
   MISOTRIS = OUTPUT;
 }
 
 static void disable(void) {
-  SCKIOC = 0;
+  MISO = 0;
   MISOTRIS = INPUT;
-  ++transactionAvailable;
 }
 
-void SpiCS(unsigned char state) {
-  if (state & CS_mask)
-    disable();
-  else
-    enable();
-}
+void clockinout(void) {
+  static __bit last;
 
-void SpiSCK(unsigned char state) {
-  if (state & SCK_mask) { /* low to high transition */
-    MISO = *outBuffer & bit ? 1 : 0;
-  } else { /* high to low transition */
-    if (MOSI)
-      *inBuffer |= bit;
+  while (!CS) {
+    while (!CS && SCK == last)
+      ;
+    if (CS)
+      return;
 
-    bit >>= 1;
+    last ^= 1;
+    if (last) { /* low to high transition */
 
-    if (!bit) { /* word transition. */
-      bit = 0x80;
+      MISO = *outBuffer & mask ? 1 : 0;
+    } else { /* high to low transition */
 
-      if (count <= maxBytes) {
-        ++inBuffer;
-        ++count;
-        if (!writeBlank)
-          ++outBuffer;
+      if (MOSI) {
+        *inBuffer |= mask;
       } else {
-        inBuffer = &scratch;
+      }
+
+      mask >>= 1;
+
+      if (!mask) { /* word transition. */
+        mask = 0x80;
+
+        if (count) {
+          ++inBuffer;
+          --count;
+          if (writeBlank == false)
+            ++outBuffer;
+        } else {
+          inBuffer = &scratch;
+        }
       }
     }
   }
 }
 
-void SpiTransaction(unsigned char bytes,
-                    bool writeBlank,
-                    volatile unsigned char *write,
-                    volatile unsigned char *read) {
+static const unsigned char tmpBuffer[] = {0,1,2,3,4,5};
 
-  count = 0;
-  maxBytes = bytes;
+void SpiTransaction(unsigned char bytes,
+                    unsigned char blank,
+                    unsigned char *write,
+                    unsigned char *read) {
+  count = bytes - 1;
   inBuffer = read;
-  outBuffer = writeBlank? &blank: write;
-  while (!transactionAvailable)
+  outBuffer = blank? &blankBfr: write;
+  writeBlank = blank;
+
+  while (CS)
     ;
-  transactionAvailable = 0;
+  enable();
+  clockinout();
+  disable();
+
 }
