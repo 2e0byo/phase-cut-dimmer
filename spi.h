@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #ifndef SPI
 #define SPI
 /**
@@ -18,11 +19,12 @@ void SpiSCK(unsigned char state);
  * @brief SPI Transaction.
  * @details Blocking send and receive.
  * @param[in] bytes Expected length (master may not honour).
+ * @param[in] writeBlank Write nothing (write ptr is ignored).
  * @param[out] write Buffer to write into.
  * @param[in] read Buffer to read from.
  */
 
-void SpiTransaction(unsigned char bytes, volatile unsigned char *write,
+void SpiTransaction(unsigned char bytes, bool writeBlank, volatile unsigned char *write,
                     volatile unsigned char *read);
 
 #endif

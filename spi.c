@@ -1,5 +1,6 @@
 #include "hal.h"
 #include <xc.h>
+#include <stdbool.h>
 
 static volatile unsigned char *inBuffer;
 static volatile unsigned char *outBuffer;
@@ -8,6 +9,8 @@ static unsigned char count = 0;
 static unsigned char scratch;
 static unsigned char bit = 0x80;
 static unsigned char transactionAvailable = 0;
+static unsigned char blank = 0;
+bool writeBlank;
 
 static void enable(void) {
   SCKIOC = 1; /* enable interrupt on clock change */
@@ -42,8 +45,9 @@ void SpiSCK(unsigned char state) {
 
       if (count <= maxBytes) {
         ++inBuffer;
-        ++outBuffer;
         ++count;
+        if (!writeBlank)
+          ++outBuffer;
       } else {
         inBuffer = &scratch;
       }
@@ -51,12 +55,15 @@ void SpiSCK(unsigned char state) {
   }
 }
 
-void SpiTransaction(unsigned char bytes, volatile unsigned char *write,
+void SpiTransaction(unsigned char bytes,
+                    bool writeBlank,
+                    volatile unsigned char *write,
                     volatile unsigned char *read) {
+
   count = 0;
   maxBytes = bytes;
   inBuffer = read;
-  outBuffer = write;
+  outBuffer = writeBlank? &blank: write;
   while (!transactionAvailable)
     ;
   transactionAvailable = 0;
