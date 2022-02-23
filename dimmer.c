@@ -11,7 +11,7 @@ static unsigned int calcPeriod(unsigned int period) {
 }
 
 void setDuty(unsigned int val) {
-  val %= 1023;
+  val  = val > 1023 ? 1023 : val;
   period = val? calcPeriod((unsigned long)10000 * val / 0x3ff) : 0;
   duty = val;
 }
@@ -20,10 +20,13 @@ void setDuty(unsigned int val) {
 void __interrupt() dimmerISR(void) {
   if (PIR1bits.TMR1IF) {
     LAMP = 0;
-    T1CONbits.TMR1ON = 0; // turn on Timer 1
+    T1CONbits.TMR1ON = 0; // turn off Timer 1
     PIR1bits.TMR1IF = 0;  /* clear flag */
   }
   if (INTCONbits.INTF) {
+
+    T1CONbits.TMR1ON = 0; // turn off Timer 1
+    PIR1bits.TMR1IF = 0;  /* clear flag */
     INTCONbits.INTF = 0; /* clear flag */
     OPTION_REGbits.INTEDG ^= 1;
 
