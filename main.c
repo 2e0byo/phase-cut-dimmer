@@ -99,29 +99,27 @@ void main(void) {
       else
         SpiTransaction(len, false, ++payloadPtr, read);
       break;
+
+      case 'r':
+        *(++payloadPtr) =  duty & 0xff;
+        *(++payloadPtr) =  duty >> 8;
+        SpiTransaction(2, false, &(payload[1]), read);
+        break;
+
+      case 's':
+        val = (unsigned int) payload[1];
+        val |= (unsigned int) (payload[2] << 8);
+        setDuty(val);
+        duty = val;
+
+        payload[1] = duty & 0xff;
+        payload[2] = duty >> 8;
+        SpiTransaction(2, false, &(payload[1]), read);
+        break;
+      default:
+        SpiError();
+      }
     }
-    /* SpiTransaction(6, false, payload, read); */
-  }
-    /*   /\* case 'r': *\/ */
-    /*   /\*   *payloadPtr++ = (unsigned char) duty >> 8; *\/ */
-    /*   /\*   *payloadPtr++ = (unsigned char) duty &0xff; *\/ */
-    /*   /\*   /\\* payload[2] = (unsigned char) duty & 0xff; *\\/ *\/ */
-    /*   /\*   /\\* payload[3] = (unsigned char) 0; *\\/ *\/ */
-    /*   /\*   /\\* payload[2] = payloadPtr == &payload[2]; *\\/ *\/ */
-    /*   /\*   SpiTransaction(2, &(payload[2]), read); *\/ */
-    /*   /\*   break; *\/ */
-    /*   /\* case 's': *\/ */
-    /*   /\*   val = (unsigned int)  *payloadPtr++ << 8; *\/ */
-    /*   /\*   val |= (unsigned int) *payloadPtr++; *\/ */
-    /*   /\*   *payloadPtr++ = (unsigned char)duty >> 8; *\/ */
-    /*   /\*   *payloadPtr++ = (unsigned char)duty & 0xff; *\/ */
-    /*   /\*   setDuty(val); *\/ */
-    /*   /\*   SpiTransaction(2, &(payload[2]), read); *\/ */
-    /*   /\*   break; *\/ */
-    /*   default: */
-    /*     SpiError(); */
-    /*   } */
-    /* } */
     return;
 }
 
