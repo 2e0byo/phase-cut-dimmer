@@ -11,6 +11,7 @@ static unsigned char transactionAvailable = 0;
 
 static void enable(void) {
   SCKIOC = 1; /* enable interrupt on clock change */
+  MISO = 0;
   MISOTRIS = OUTPUT;
 }
 
