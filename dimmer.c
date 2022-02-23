@@ -18,13 +18,11 @@ void setDuty(unsigned int val) {
 
 
 void dimmerISR(void) {
-  if (PIR1bits.TMR1IF == 1) {
+  if (PIR1bits.TMR1IF) {
     LAMP = 0;
-    PIR1bits.TMR1IF = 0;  // clear interrupt flag
     T1CONbits.TMR1ON = 0; // turn on Timer 1
   }
   if (INTCONbits.GPIF) {
-    INTCONbits.GPIF = 0;        /* clear flag */
     if (!period) return;
 
     TMR1 = period;
