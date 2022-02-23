@@ -12,7 +12,6 @@
 #pragma config CPD = OFF   // data code protection disabled
 #pragma config CP = OFF    // code protection disabled
 
-volatile unsigned char last;
 
 void init(void) {
   OSCCONbits.IRCF = 0b111;
@@ -35,10 +34,8 @@ void init(void) {
   OPTION_REGbits.nGPPU = 1;
   WPU = 0xff;
 
-  INTCONbits.GPIE = 1; /* interrupt on change on input pins */
-  MAINSIOC = 1;
+  INTCONbits.INTE = 1;          /* interrupt on pin 2 */
 
-  /* CSIOC = 1; /\* interrupt on change on CS. *\/ */
 
   T1CON = 0b00110000;    // Timer 1 off; 1:8 prescaler; use internal clock
   T1CONbits.T1CKPS1 = 0; // bits 5-4  Prescaler Rate Select bits
@@ -50,7 +47,6 @@ void init(void) {
 
   T1CONbits.TMR1ON = 0; // turn off Timer 1
 
-  last = GPIO;
   INTCONbits.GIE = 1; // enable all interrupts
 }
 
@@ -73,15 +69,6 @@ void main(void) {
   unsigned int val;
 
   LAMP = 0;
-
-  /* for (unsigned int i=0; i<1022; i++) { */
-  /*   setDuty(i); */
-  /*   __delay_ms(3); */
-  /* } */
-  /* for (unsigned int i = 1023; i >0; i--) { */
-  /*   setDuty(i); */
-  /*   __delay_ms(3); */
-  /* } */
 
   while (1) {
     for (unsigned char *ptr = payload; ptr < &payload[5]; ptr++) {

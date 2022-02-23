@@ -23,8 +23,9 @@ void __interrupt() dimmerISR(void) {
     T1CONbits.TMR1ON = 0; // turn on Timer 1
     PIR1bits.TMR1IF = 0;  /* clear flag */
   }
-  if (INTCONbits.GPIF) {
-    INTCONbits.GPIF = 0; /* clear flag */
+  if (INTCONbits.INTF) {
+    INTCONbits.INTF = 0; /* clear flag */
+    OPTION_REGbits.INTEDG ^= 1;
 
     if (!period) {
       LAMP = 0;                 /* clear conflict state */
