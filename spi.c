@@ -40,7 +40,7 @@ void SpiSCK(unsigned char state) {
     if (!bit) { /* word transition. */
       bit = 0x80;
 
-      if (count < maxBytes) {
+      if (count <= maxBytes) {
         ++inBuffer;
         ++outBuffer;
         ++count;
