@@ -17,13 +17,19 @@ void setDuty(unsigned int val) {
 }
 
 
-void dimmerISR(void) {
+void __interrupt() dimmerISR(void) {
   if (PIR1bits.TMR1IF) {
     LAMP = 0;
     T1CONbits.TMR1ON = 0; // turn on Timer 1
+    PIR1bits.TMR1IF = 0;  /* clear flag */
   }
   if (INTCONbits.GPIF) {
-    if (!period) return;
+    INTCONbits.GPIF = 0; /* clear flag */
+
+    if (!period) {
+      LAMP = 0;                 /* clear conflict state */
+      return;
+    }
 
     TMR1 = period;
     T1CONbits.TMR1ON = 1; // turn on Timer 1

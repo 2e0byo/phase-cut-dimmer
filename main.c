@@ -35,8 +35,8 @@ void init(void) {
   OPTION_REGbits.nGPPU = 1;
   WPU = 0xff;
 
-  /* INTCONbits.GPIE = 1; /\* interrupt on change on input pins *\/ */
-  /* MAINSIOC = 1; */
+  INTCONbits.GPIE = 1; /* interrupt on change on input pins */
+  MAINSIOC = 1;
 
   /* CSIOC = 1; /\* interrupt on change on CS. *\/ */
 
@@ -46,12 +46,12 @@ void init(void) {
 
   INTCONbits.PEIE = 1; // enable peripheral interrupts (i.e., Timer 1)
   PIR1bits.TMR1IF = 0; // clear Timer 1 interrupt flag
-  /* PIE1bits.TMR1IE = 1; // enable Timer 1 interrupts */
+  PIE1bits.TMR1IE = 1; // enable Timer 1 interrupts
 
   T1CONbits.TMR1ON = 0; // turn off Timer 1
 
   last = GPIO;
-  /* INTCONbits.GIE = 1; // enable all interrupts */
+  INTCONbits.GIE = 1; // enable all interrupts
 }
 
 
@@ -121,20 +121,4 @@ void main(void) {
       }
     }
     return;
-}
-
-void __interrupt() ISR() {
-  if (PIR1bits.TMR1IF) {
-    dimmerISR();
-    PIR1bits.TMR1IF = 0; /* clear flag */
-  }
-
-  if (INTCONbits.GPIF) {
-    unsigned char state = GPIO;
-    unsigned char changed = last ^ state;
-    if (changed & MAINS_mask)
-      dimmerISR();
-    last = state;
-    INTCONbits.GPIF = 0; /* clear flag */
-  }
 }
