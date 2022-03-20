@@ -70,7 +70,7 @@ void SpiTransaction(unsigned char bytes,
   writeBlank = blank;
 
   while (CS)
-    ;
+    CLRWDT();
   enable();
   clockinout();
   disable();

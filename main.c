@@ -4,7 +4,7 @@
 #include <xc.h>
 
 #pragma config FOSC = INTOSCIO // oscillator selection; use internal oscillator
-#pragma config WDTE = OFF      // disable watchdog Timer
+#pragma config WDTE = ON      // enable watchdog Timer
 #pragma config PWRTE = OFF     // power-up timer disabled
 #pragma config MCLRE =                                            \
   OFF // use MCLR pin (internally tied to Vdd) as a digital input
@@ -71,6 +71,7 @@ void main(void) {
   LAMP = 0;
 
   while (1) {
+    CLRWDT();
     for (unsigned char *ptr = payload; ptr < &payload[5]; ptr++) {
       *ptr = 0;
     }
