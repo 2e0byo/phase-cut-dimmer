@@ -98,7 +98,6 @@ void main(void) {
         val = (unsigned int) payload[1];
         val |= (unsigned int) (payload[2] << 8);
         setDuty(val);
-        duty = val;
 
         payload[1] = duty & 0xff;
         payload[2] = duty >> 8;
