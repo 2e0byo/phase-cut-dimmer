@@ -33,7 +33,7 @@ void __interrupt() dimmerISR(void) {
     T1CONbits.TMR1ON = 0; // turn off Timer 1
     PIR1bits.TMR1IF = 0;  /* clear flag */
     INTCONbits.INTF = 0; /* clear flag */
-    OPTION_REGbits.INTEDG ^= 1;
+    OPTION_REGbits.INTEDG ^= 1; /* swap interrupt edge */
 
     if (!period) {
       LAMP = 0;                 /* clear conflict state */
