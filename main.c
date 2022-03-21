@@ -16,8 +16,9 @@
 void init(void) {
   OSCCONbits.IRCF = 0b111;
   OSCCONbits.SCS = 1;
+  WDTCON = 0b01001;             /* 512 ms */
 
-  __delay_ms(100);
+  /* __delay_ms(100); */
   /* hal */
   MISOTRIS = INPUT; /* in high Z state */
   MOSITRIS = INPUT;
@@ -71,7 +72,6 @@ void main(void) {
   LAMP = 0;
 
   while (1) {
-    CLRWDT();
     for (unsigned char *ptr = payload; ptr < &payload[5]; ptr++) {
       *ptr = 0;
     }
