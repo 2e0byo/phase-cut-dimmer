@@ -13,10 +13,12 @@ static unsigned int calcPeriod(unsigned int period) {
 void setDuty(unsigned int val) {
   if (val > 1023)
     val = 1023;
-  period = val? calcPeriod((unsigned long)10000 * val / 0x3ff) : 0;
+  unsigned int buf;
+  buf = val? calcPeriod((unsigned long)10000 * val / 0x3ff) : 0;
   di();
-  duty = val;
+  period = buf;
   ei();
+  duty = val;
 }
 
 
