@@ -53,8 +53,8 @@ void init(void) {
 
 
 
-unsigned char payload[6];
-unsigned char read[6];
+unsigned char payload[] = {0, 0, 0, 0, 0, 0};
+unsigned char read[] = {0, 0, 0, 0, 0, 0};
 
 void SpiError(void) {
   for (unsigned char *ptr = payload; ptr < &payload[5]; ptr++)
