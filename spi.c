@@ -35,7 +35,6 @@ bool clockinout(void) {
     /* last ^= 1; */
     last = SCK;
     if (last) { /* low to high transition */
-
       MISO = *outBuffer & mask ? 1 : 0;
     } else { /* high to low transition */
       /* must be an edge, as we waited at the beginning */
