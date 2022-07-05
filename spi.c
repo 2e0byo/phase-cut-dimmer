@@ -22,6 +22,7 @@ static void disable(void) {
 
 void clockinout(void) {
   static __bit last;
+  last = 0;
 
   while (!CS) {
     /* Wait for change. */
