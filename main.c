@@ -2,6 +2,7 @@
 #include "hal.h"
 #include "spi.h"
 #include <xc.h>
+#include <string.h>
 
 #pragma config FOSC = INTOSCIO // oscillator selection; use internal oscillator
 #pragma config WDTE = ON      // enable watchdog Timer
@@ -54,12 +55,14 @@ void init(void) {
 
 
 unsigned char payload[] = {0, 0, 0, 0, 0, 0};
-unsigned char read[] = {0, 0, 0, 0, 0, 0};
+unsigned char response[] = {0, 0, 0, 0, 0, 0};
 
-void SpiError(void) {
-  for (unsigned char *ptr = payload; ptr < &payload[5]; ptr++)
-    *ptr = '!';
-  SpiTransaction(6, false, payload, read);
+void SpiError(const unsigned char err) {
+  unsigned char *ptr = response;
+  while (ptr < &response[6]) {
+    *ptr++ = '!';
+    *ptr++ = err;
+  }
 }
 
 void main(void) {
@@ -72,40 +75,38 @@ void main(void) {
   LAMP = 0;
 
   while (1) {
-    for (unsigned char *ptr = payload; ptr < &payload[5]; ptr++) {
-      *ptr = 0;
-    }
-    payloadPtr = payload;
-    SpiTransaction(6, true, read, payload);
-    cmd = *payloadPtr;
+    if (!SpiTransaction(6, false, response, payload))
+      continue;
+    cmd = payload[0];
 
     switch (cmd) {
     case 'p':
-      len = *(++payloadPtr);
+      len = payload[1];
       if (!len || len > 4)
-        SpiError();
+        SpiError('l');
       else
-        SpiTransaction(len, false, ++payloadPtr, read);
+        memcpy(response, &payload[2], len);
       break;
 
-      case 'r':
-        *(++payloadPtr) =  duty & 0xff;
-        *(++payloadPtr) =  duty >> 8;
-        SpiTransaction(2, false, &(payload[1]), read);
-        break;
+    case 'r':
+      response[0] =  duty & 0xff;
+      response[1] =  duty >> 8;
+      break;
 
-      case 's':
-        val = (unsigned int) payload[1];
-        val |= (unsigned int) (payload[2] << 8);
-        setDuty(val);
+    case 's':
+      val = (unsigned int) payload[1];
+      val |= (unsigned int) (payload[2] << 8);
+      setDuty(val);
 
-        payload[1] = duty & 0xff;
-        payload[2] = duty >> 8;
-        SpiTransaction(2, false, &(payload[1]), read);
-        break;
-      default:
-        SpiError();
-      }
+      response[0] = duty & 0xff;
+      response[1] = duty >> 8;
+      break;
+
+    default:
+      /* SpiTransaction(6, false, payload, response); */
+      SpiError(cmd);
     }
-    return;
+    memset(payload, 0, sizeof(payload));
+  }
+  return;
 }
