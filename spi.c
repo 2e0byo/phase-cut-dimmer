@@ -32,7 +32,8 @@ bool clockinout(void) {
     if (CS)
       return !clockCount;
 
-    last ^= 1;
+    /* last ^= 1; */
+    last = SCK;
     if (last) { /* low to high transition */
 
       MISO = *outBuffer & mask ? 1 : 0;
