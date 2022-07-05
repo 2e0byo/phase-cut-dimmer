@@ -20,8 +20,9 @@ static void disable(void) {
   MISOTRIS = INPUT;
 }
 
-void clockinout(void) {
+bool clockinout(void) {
   static __bit last;
+  unsigned int clockCount = 0;
   last = 0;
 
   while (!CS) {
@@ -29,7 +30,7 @@ void clockinout(void) {
     while (!CS && SCK == last)
       ;
     if (CS)
-      return;
+      return !clockCount;
 
     last ^= 1;
     if (last) { /* low to high transition */
@@ -71,11 +72,13 @@ bool SpiTransaction(unsigned char bytes,
   inBuffer = read;
   outBuffer = blank? &blankBfr: write;
   writeBlank = blank;
+  bool ret;
 
   while (CS)
     CLRWDT();
   enable();
-  clockinout();
+  ret = clockinout();
   disable();
+  return ret;
 
 }

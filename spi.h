@@ -24,7 +24,7 @@ void SpiSCK(unsigned char state);
  * @param[in] read Buffer to read from.
  */
 
-void SpiTransaction(unsigned char bytes, unsigned char blank, unsigned char *write,
+bool SpiTransaction(unsigned char bytes, unsigned char blank, unsigned char *write,
                     unsigned char *read);
 
 #endif
