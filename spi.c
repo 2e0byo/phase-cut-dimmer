@@ -24,6 +24,7 @@ void clockinout(void) {
   static __bit last;
 
   while (!CS) {
+    /* Wait for change. */
     while (!CS && SCK == last)
       ;
     if (CS)
@@ -34,10 +35,11 @@ void clockinout(void) {
 
       MISO = *outBuffer & mask ? 1 : 0;
     } else { /* high to low transition */
+      /* must be an edge, as we waited at the beginning */
+      ++clockCount;
 
       if (MOSI) {
         *inBuffer |= mask;
-      } else {
       }
 
       mask >>= 1;
