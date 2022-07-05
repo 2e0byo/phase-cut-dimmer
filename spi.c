@@ -5,9 +5,9 @@
 static unsigned char *inBuffer;
 static const unsigned char *outBuffer;
 static unsigned char count = 0;
-static unsigned char scratch;
+static unsigned char devNull;
 static unsigned char mask = 0x80;
-static unsigned char blankBfr = 0;
+static unsigned char blankBfr = '#';
 bool writeBlank;
 
 static void enable(void) {
@@ -51,16 +51,16 @@ void clockinout(void) {
           if (writeBlank == false)
             ++outBuffer;
         } else {
-          inBuffer = &scratch;
+          inBuffer = &devNull;
         }
       }
     }
   }
+  return !clockCount;
 }
 
-static const unsigned char tmpBuffer[] = {0,1,2,3,4,5};
 
-void SpiTransaction(unsigned char bytes,
+bool SpiTransaction(unsigned char bytes,
                     unsigned char blank,
                     unsigned char *write,
                     unsigned char *read) {
