@@ -8,5 +8,5 @@
  * @param[in] read Buffer to read from.
  * @return true if anything sent else false.
  */
-bool SpiTransaction(unsigned char *mosi, const unsigned char *miso, unsigned char len);
+bool SpiTransaction(char *mosi, const char *miso, unsigned char len);
 #endif

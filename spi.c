@@ -2,7 +2,7 @@
 #include "hal.h"
 #include <xc.h>
 
-static const unsigned char devNull = '*';
+static const char devNull = '*';
 
 static void enable(void) {
   MISO = 0;
@@ -14,7 +14,7 @@ static void disable(void) {
   MISO = 0;
 }
 
-bool SpiTransaction(unsigned char *mosiPtr, const unsigned char *misoPtr, unsigned char len) {
+bool SpiTransaction(char *mosiPtr, const char *misoPtr, unsigned char len) {
   /* CS is active low */
   if (CS)
     disable();

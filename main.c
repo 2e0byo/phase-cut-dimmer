@@ -3,6 +3,8 @@
 #include "spi.h"
 #include <xc.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #pragma config FOSC = INTOSCIO // oscillator selection; use internal oscillator
 #pragma config WDTE = ON      // enable watchdog Timer
@@ -54,11 +56,11 @@ void init(void) {
 
 
 
-unsigned char mosi[] = {0, 0, 0, 0, 0, 0};
-unsigned char miso[] = {0, 0, 0, 0, 0, 0};
+char mosi[] = {0, 0, 0, 0, 0, 0};
+char miso[] = {0, 0, 0, 0, 0, 0};
 
 void SpiError(const unsigned char err) {
-  unsigned char *ptr = miso;
+  char *ptr = miso;
   while (ptr < &miso[6]) {
     *ptr++ = '!';
     *ptr++ = err;
@@ -71,6 +73,7 @@ void main(void) {
   unsigned char len;
   unsigned char *payloadPtr;
   unsigned int val;
+  char *final;
 
   LAMP = 0;
 
@@ -89,17 +92,13 @@ void main(void) {
       break;
 
     case 'r':
-      miso[0] =  duty & 0xff;
-      miso[1] =  duty >> 8;
+      sprintf(&miso[0], "%4u", duty);
       break;
 
     case 's':
-      val = (unsigned int) mosi[1];
-      val |= (unsigned int) (mosi[2] << 8);
+      val = (unsigned int) strtol(&mosi[1], &final, 10);
       setDuty(val);
-
-      miso[0] = duty & 0xff;
-      miso[1] = duty >> 8;
+      sprintf(miso, "%4u", duty);
       break;
 
     default:
