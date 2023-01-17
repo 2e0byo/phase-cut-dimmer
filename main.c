@@ -54,12 +54,12 @@ void init(void) {
 
 
 
-unsigned char payload[] = {0, 0, 0, 0, 0, 0};
-unsigned char response[] = {0, 0, 0, 0, 0, 0};
+unsigned char mosi[] = {0, 0, 0, 0, 0, 0};
+unsigned char miso[] = {0, 0, 0, 0, 0, 0};
 
 void SpiError(const unsigned char err) {
-  unsigned char *ptr = response;
-  while (ptr < &response[6]) {
+  unsigned char *ptr = miso;
+  while (ptr < &miso[6]) {
     *ptr++ = '!';
     *ptr++ = err;
   }
@@ -75,38 +75,37 @@ void main(void) {
   LAMP = 0;
 
   while (1) {
-    if (!SpiTransaction(6, false, response, payload))
+    if (!SpiTransaction(mosi, miso, 5))
       continue;
-    cmd = payload[0];
+    cmd = mosi[0];
 
     switch (cmd) {
     case 'p':
-      len = payload[1];
+      len = mosi[1];
       if (!len || len > 4)
         SpiError('l');
       else
-        memcpy(response, &payload[2], len);
+        memcpy(miso, &mosi[2], len);
       break;
 
     case 'r':
-      response[0] =  duty & 0xff;
-      response[1] =  duty >> 8;
+      miso[0] =  duty & 0xff;
+      miso[1] =  duty >> 8;
       break;
 
     case 's':
-      val = (unsigned int) payload[1];
-      val |= (unsigned int) (payload[2] << 8);
+      val = (unsigned int) mosi[1];
+      val |= (unsigned int) (mosi[2] << 8);
       setDuty(val);
 
-      response[0] = duty & 0xff;
-      response[1] = duty >> 8;
+      miso[0] = duty & 0xff;
+      miso[1] = duty >> 8;
       break;
 
     default:
-      /* SpiTransaction(6, false, payload, response); */
       SpiError(cmd);
     }
-    memset(payload, 0, sizeof(payload));
+    memset(mosi, 0, sizeof(mosi));
   }
   return;
 }

@@ -1,14 +1,8 @@
+#include "spi.h"
 #include "hal.h"
 #include <xc.h>
-#include  "spi.h"
 
-static unsigned char *inBuffer;
-static const unsigned char *outBuffer;
-static unsigned char count = 0;
-static unsigned char devNull;
-static unsigned char mask = 0x80;
-static unsigned char blankBfr = '#';
-bool writeBlank;
+static const unsigned char devNull = '*';
 
 static void enable(void) {
   MISO = 0;
@@ -16,69 +10,52 @@ static void enable(void) {
 }
 
 static void disable(void) {
-  MISO = 0;
   MISOTRIS = INPUT;
+  MISO = 0;
 }
 
-bool clockinout(void) {
-  static __bit last;
-  unsigned int clockCount = 0;
-  last = 0;
+bool SpiTransaction(unsigned char *mosiPtr, const unsigned char *misoPtr, unsigned char len) {
+  /* CS is active low */
+  if (CS)
+    disable();
+  while (CS)
+    CLRWDT();
+  enable();
 
+  static __bit last;
+  last = 0;
+  unsigned char mask = 0x80;
   while (!CS) {
-    /* Wait for change. */
     while (!CS && SCK == last)
       ;
     if (CS)
-      return !clockCount;
+      return false;
 
-    /* last ^= 1; */
-    last = SCK;
+    last ^= 1;
     if (last) { /* low to high transition */
-      MISO = *outBuffer & mask ? 1 : 0;
+      MISO = *misoPtr & mask ? 1 : 0;
     } else { /* high to low transition */
       /* must be an edge, as we waited at the beginning */
-      ++clockCount;
 
-      if (MOSI) {
-        *inBuffer |= mask;
-      }
+      if (MOSI)
+        *mosiPtr |= mask;
 
       mask >>= 1;
 
-      if (!mask) { /* word transition. */
+      if (!mask) { /* byte */
+        if (*mosiPtr == '#')
+          return true;
         mask = 0x80;
 
-        if (count) {
-          ++inBuffer;
-          --count;
-          if (writeBlank == false)
-            ++outBuffer;
+        if (len) {
+          ++mosiPtr;
+          ++misoPtr;
+          --len;
         } else {
-          inBuffer = &devNull;
+          misoPtr = &devNull;
         }
       }
     }
   }
-  return !clockCount;
-}
-
-
-bool SpiTransaction(unsigned char bytes,
-                    unsigned char blank,
-                    unsigned char *write,
-                    unsigned char *read) {
-  count = bytes - 1;
-  inBuffer = read;
-  outBuffer = blank? &blankBfr: write;
-  writeBlank = blank;
-  bool ret;
-
-  while (CS)
-    CLRWDT();
-  enable();
-  ret = clockinout();
-  disable();
-  return ret;
-
+  return false;
 }
