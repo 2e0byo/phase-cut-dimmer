@@ -19,6 +19,8 @@ void setDuty(unsigned int val) {
   period = buf;
   ei();
   duty = val;
+  if (!val)
+    LAMP = 0;
 }
 
 
