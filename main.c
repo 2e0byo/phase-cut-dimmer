@@ -71,7 +71,6 @@ void main(void) {
   init();
   unsigned char cmd;
   unsigned char len;
-  unsigned char *payloadPtr;
   unsigned int val;
   char *final;
 
