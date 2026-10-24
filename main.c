@@ -98,8 +98,10 @@ void main(void) {
   LAMP = 0;
 
   while (1) {
-    if (!SpiTransaction(mosi, miso, 5))
+    if (!SpiTransaction(mosi, miso, 5)) {
+      memset(mosi, 0, sizeof(mosi));
       continue;
+    }
     cmd = mosi[0];
 
     switch (cmd) {
