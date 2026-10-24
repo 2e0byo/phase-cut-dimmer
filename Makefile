@@ -1,7 +1,8 @@
 CC = xc8-cc
 
 ARGS = -mcpu=12F683\
-       -std=c99
+       -std=c99 \
+       -O3
 
 INCLUDES = -I .
 
