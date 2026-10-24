@@ -9,7 +9,7 @@ void setDuty(unsigned int duty);
  * @var duty
  * @brief The current duty (max 1023).
  */
-unsigned int duty;
+extern unsigned int duty;
 
 /**
  * @brief ISR for the dimmer.
