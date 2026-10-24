@@ -34,7 +34,7 @@ void init(void) {
   CMCON0bits.CM = 0b111;
 
   /* pullups */
-  OPTION_REGbits.nGPPU = 1;
+  OPTION_REGbits.nGPPU = 0; // Pull ups enabled
   WPU = 0xff;
 
   INTCONbits.INTE = 1;          /* interrupt on pin 2 */
