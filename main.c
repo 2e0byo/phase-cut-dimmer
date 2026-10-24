@@ -3,7 +3,6 @@
 #include "spi.h"
 #include <xc.h>
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #pragma config FOSC = INTOSCIO // oscillator selection; use internal oscillator
@@ -68,6 +67,27 @@ void SpiError(const unsigned char err) {
   }
 }
 
+void fmt4Digits(char *out, unsigned int value) {
+    unsigned int divisor = 1000;
+    bool started = false;
+    char *end = out + 3;
+    char *writePtr = out;
+    unsigned char digit;
+
+    while (writePtr <= end) {
+        digit = (unsigned char)(value / divisor);
+        value %= divisor;
+        divisor /= 10;
+        if (started || digit || writePtr == end) {
+            *writePtr++ = '0' + digit;
+            started = true;
+        } else {
+            *writePtr++ = ' ';
+        }
+    }
+    *writePtr = '\0';
+}
+
 void main(void) {
   init();
   unsigned char cmd;
@@ -92,13 +112,13 @@ void main(void) {
       break;
 
     case 'r':
-      sprintf(&miso[0], "%4u", duty);
+      fmt4Digits(miso, duty);
       break;
 
     case 's':
       val = (unsigned int) strtol(&mosi[1], &final, 10);
       setDuty(val);
-      sprintf(miso, "%4u", duty);
+      fmt4Digits(miso, duty);
       break;
 
     default:
