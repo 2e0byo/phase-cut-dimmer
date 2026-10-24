@@ -15,6 +15,7 @@ static void disable(void) {
 }
 
 bool SpiTransaction(char *mosiPtr, const char *misoPtr, unsigned char len) {
+  char scratch;
   /* CS is active low */
   if (CS)
     disable();
@@ -53,6 +54,8 @@ bool SpiTransaction(char *mosiPtr, const char *misoPtr, unsigned char len) {
           --len;
         } else {
           misoPtr = &devNull;
+          mosiPtr = &scratch;
+          scratch = 0;
         }
       }
     }
