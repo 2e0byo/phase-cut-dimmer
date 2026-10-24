@@ -61,7 +61,8 @@ char miso[] = {0, 0, 0, 0, 0, 0};
 
 void SpiError(const unsigned char err) {
   char *ptr = miso;
-  while (ptr < &miso[6]) {
+  char *end = miso + sizeof(miso);
+  while (ptr < end) {
     *ptr++ = '!';
     *ptr++ = err;
   }
