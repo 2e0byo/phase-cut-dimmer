@@ -1,0 +1,76 @@
+{
+  "nodes": {
+    "dfp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788380782,
+        "narHash": "sha256-OvAiMomnVofZMW8L7ngInHhhanl1+w54Cogr0EwdQjk=",
+        "type": "tarball",
+        "url": "https://packs.download.microchip.com/Microchip.PIC10-12Fxxx_DFP.1.10.193.atpack"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://packs.download.microchip.com/Microchip.PIC10-12Fxxx_DFP.1.10.193.atpack"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1792502884,
+        "narHash": "sha256-IoNisKcGbUjdd45qCqywGMCYmZ5EnkxezvLII0FWwNA=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "02c087f3fe673c9e317f206a627cb6b910336dbe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "oprog": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1772809992,
+        "narHash": "sha256-Qzga49UkaJjpJbL9TMnfZzbPTRpjcZvAAzealfmX64A=",
+        "owner": "2e0byo",
+        "repo": "open-pic-prog",
+        "rev": "daa53685fd8418f771ccb6008f8d2da54e13fb70",
+        "type": "github"
+      },
+      "original": {
+        "owner": "2e0byo",
+        "repo": "open-pic-prog",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "dfp": "dfp",
+        "nixpkgs": "nixpkgs",
+        "oprog": "oprog",
+        "xc8": "xc8"
+      }
+    },
+    "xc8": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781509838,
+        "narHash": "sha256-/JO+ZRbiAOlkE8F7xgeFVjB5ar2rP54FxqylDp8405M=",
+        "type": "tarball",
+        "url": "https://ww1.microchip.com/downloads/aemDocuments/documents/DEV/ProductDocuments/SoftwareTools/xc8-v4.00-full-install-linux-x64.tar.xz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://ww1.microchip.com/downloads/aemDocuments/documents/DEV/ProductDocuments/SoftwareTools/xc8-v4.00-full-install-linux-x64.tar.xz"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
